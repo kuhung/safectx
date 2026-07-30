@@ -1,0 +1,5 @@
+{
+  "name": "safectx",
+  "version": "0.1.0",
+  "description": "Create local AI-safe copies before confidential files enter a model context."
+}

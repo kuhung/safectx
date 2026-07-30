@@ -1,0 +1,33 @@
+{
+  "name": "safectx",
+  "version": "0.1.0",
+  "description": "Create local AI-safe copies before confidential files enter a model context.",
+  "author": {
+    "name": "SafeContext"
+  },
+  "keywords": [
+    "privacy",
+    "redaction",
+    "secrets",
+    "pii",
+    "ai-safety"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "SafeContext",
+    "shortDescription": "Sanitize files locally before sharing them with AI.",
+    "longDescription": "SafeContext creates deterministic copies under .ai-safe, reports risk categories without printing detected values, and tells Codex to use only the sanitized copies for downstream work.",
+    "developerName": "SafeContext",
+    "category": "Productivity",
+    "capabilities": [
+      "Local file processing",
+      "Privacy risk report"
+    ],
+    "defaultPrompt": [
+      "Make an AI-safe copy of these files before reading them.",
+      "Scan this workspace for secrets and create sanitized copies.",
+      "Prepare safe local context for an external AI."
+    ],
+    "brandColor": "#184F38"
+  }
+}

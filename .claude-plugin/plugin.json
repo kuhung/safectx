@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "safectx",
+  "displayName": "SafeContext",
+  "version": "0.1.0",
+  "description": "Create local AI-safe copies before confidential files enter a model context.",
+  "author": {
+    "name": "SafeContext"
+  },
+  "keywords": [
+    "privacy",
+    "redaction",
+    "secrets",
+    "pii",
+    "ai-safety"
+  ],
+  "skills": "./skills/"
+}
