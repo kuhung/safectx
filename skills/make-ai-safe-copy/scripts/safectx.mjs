@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
+import { lstat, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 
@@ -73,47 +73,90 @@ const PATTERNS = [
 ];
 
 function parseArgs(argv) {
+  const values = [...argv];
+  const mode =
+    values[0] === "restore" || values[0] === "sanitize"
+      ? values.shift()
+      : "sanitize";
   const inputs = [];
   const terms = [];
   let outDir = ".ai-safe";
+  let mappingPath = "";
+  let inputFile = "";
+  let outputFile = "";
 
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
+  for (let index = 0; index < values.length; index += 1) {
+    const arg = values[index];
     if (arg === "--out-dir") {
-      outDir = argv[index + 1] ?? "";
+      outDir = values[index + 1] ?? "";
       index += 1;
     } else if (arg === "--term") {
-      const term = argv[index + 1]?.trim();
+      const term = values[index + 1]?.trim();
       if (term) terms.push(term);
       index += 1;
+    } else if (arg === "--mapping") {
+      mappingPath = values[index + 1] ?? "";
+      index += 1;
+    } else if (arg === "--input") {
+      inputFile = values[index + 1] ?? "";
+      index += 1;
+    } else if (arg === "--output") {
+      outputFile = values[index + 1] ?? "";
+      index += 1;
     } else if (arg === "--help" || arg === "-h") {
-      return { help: true, inputs, terms, outDir };
+      return {
+        help: true,
+        mode,
+        inputs,
+        terms,
+        outDir,
+        mappingPath,
+        inputFile,
+        outputFile,
+      };
     } else if (arg.startsWith("-")) {
       throw new Error(`Unknown option: ${arg}`);
     } else {
       inputs.push(arg);
     }
   }
-  return { help: false, inputs, terms, outDir };
+  return {
+    help: false,
+    mode,
+    inputs,
+    terms,
+    outDir,
+    mappingPath,
+    inputFile,
+    outputFile,
+  };
 }
 
 function help() {
   console.log(`SafeContext local file sanitizer
 
 Usage:
-  node safectx.mjs [--out-dir .ai-safe] [--term "Company"] <path> [<path> ...]
+  node safectx.mjs sanitize [--out-dir .ai-safe] [--term "Company"] <path> [<path> ...]
+  node safectx.mjs restore --mapping .ai-safe/private/mapping.json \\
+    --input ai-response.txt --output restored-response.txt
 
 The command writes sanitized copies under <out-dir>/files and an aggregate
-report to <out-dir>/report.json. It never prints detected values.`);
+report to <out-dir>/report.json. A private mode-0600 mapping supports local
+restoration. Neither command prints detected or restored values.`);
 }
 
 async function collectFiles(inputPath, outputRoot, files, skipped) {
   const absolute = path.resolve(inputPath);
   let info;
   try {
-    info = await stat(absolute);
+    info = await lstat(absolute);
   } catch {
     skipped.push({ path: safeRelative(absolute), reason: "not_found" });
+    return;
+  }
+
+  if (info.isSymbolicLink()) {
+    skipped.push({ path: safeRelative(absolute), reason: "symlink" });
     return;
   }
 
@@ -204,22 +247,29 @@ function collectMatches(text, terms) {
   return accepted.sort((a, b) => a.start - b.start);
 }
 
-function sanitize(text, terms) {
+function createMappingState() {
+  return {
+    counters: new Map(),
+    tokenByValue: new Map(),
+    valueByToken: {},
+  };
+}
+
+function sanitize(text, terms, state) {
   const matches = collectMatches(text, terms);
-  const counters = new Map();
-  const tokenByValue = new Map();
   const counts = {};
   let cursor = 0;
   let output = "";
 
   for (const match of matches) {
     const key = `${match.type}:${match.value.toLocaleLowerCase()}`;
-    let token = tokenByValue.get(key);
+    let token = state.tokenByValue.get(key);
     if (!token) {
-      const next = (counters.get(match.type) ?? 0) + 1;
-      counters.set(match.type, next);
+      const next = (state.counters.get(match.type) ?? 0) + 1;
+      state.counters.set(match.type, next);
       token = `<${match.type}_${next}>`;
-      tokenByValue.set(key, token);
+      state.tokenByValue.set(key, token);
+      state.valueByToken[token] = match.value;
     }
     output += text.slice(cursor, match.start);
     output += token;
@@ -230,6 +280,34 @@ function sanitize(text, terms) {
   return { output, counts, findingCount: matches.length };
 }
 
+function restore(text, tokens) {
+  let output = text;
+  let restoredCount = 0;
+
+  const entries = Object.entries(tokens)
+    .filter(
+      ([token, value]) =>
+        /^<[A-Z]+_\d+>$/.test(token) &&
+        typeof value === "string" &&
+        value.length > 0,
+    )
+    .sort(([a], [b]) => b.length - a.length);
+
+  for (const [token, value] of entries) {
+    const escaped = token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    output = output.replace(new RegExp(escaped, "gi"), () => {
+      restoredCount += 1;
+      return value;
+    });
+  }
+
+  return {
+    output,
+    restoredCount,
+    unresolvedTokens: [...new Set(output.match(/<[A-Z]+_\d+>/g) ?? [])],
+  };
+}
+
 function safeOutputRelative(absolute) {
   const relative = path.relative(process.cwd(), absolute);
   if (relative.startsWith("..") || path.isAbsolute(relative)) {
@@ -238,18 +316,10 @@ function safeOutputRelative(absolute) {
   return relative;
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
-  if (args.help) {
-    help();
-    return;
-  }
+async function sanitizeFiles(args) {
   if (args.inputs.length === 0) {
-    help();
-    process.exitCode = 2;
-    return;
+    throw new Error("Sanitize mode requires at least one input path.");
   }
-
   const outputRoot = path.resolve(args.outDir);
   const files = [];
   const skipped = [];
@@ -261,6 +331,7 @@ async function main() {
   const processed = [];
   const aggregate = {};
   let totalFindings = 0;
+  const mappingState = createMappingState();
 
   for (const file of uniqueFiles) {
     let original;
@@ -276,7 +347,7 @@ async function main() {
       continue;
     }
 
-    const result = sanitize(original, args.terms);
+    const result = sanitize(original, args.terms, mappingState);
     const relative = safeOutputRelative(file.absolute);
     const destination = path.join(outputRoot, "files", relative);
     await mkdir(path.dirname(destination), { recursive: true });
@@ -295,10 +366,29 @@ async function main() {
     });
   }
 
+  const privateDirectory = path.join(outputRoot, "private");
+  const privateMappingPath = path.join(privateDirectory, "mapping.json");
+  await mkdir(privateDirectory, { recursive: true, mode: 0o700 });
+  await writeFile(
+    privateMappingPath,
+    `${JSON.stringify(
+      {
+        version: 1,
+        generated_at: new Date().toISOString(),
+        tokens: mappingState.valueByToken,
+      },
+      null,
+      2,
+    )}\n`,
+    { encoding: "utf8", mode: 0o600 },
+  );
+
   const report = {
-    version: 1,
+    version: 2,
     generated_at: new Date().toISOString(),
     output_root: path.relative(process.cwd(), outputRoot) || ".",
+    private_mapping_path: path.relative(process.cwd(), privateMappingPath),
+    restoration_available: totalFindings > 0,
     processed_files: processed.length,
     total_findings: totalFindings,
     categories: aggregate,
@@ -308,6 +398,7 @@ async function main() {
       "Rule-based prototype; contextual secrets may remain.",
       "Office, PDF, image, archive, metadata, comments, and OCR layers are not processed.",
       "Review sanitized copies before external sharing.",
+      "The private mapping contains original values; never share it with an AI or external service.",
     ],
   };
 
@@ -322,6 +413,7 @@ async function main() {
     JSON.stringify({
       ok: processed.length > 0,
       report: path.relative(process.cwd(), path.join(outputRoot, "report.json")),
+      private_mapping: path.relative(process.cwd(), privateMappingPath),
       processed_files: processed.length,
       total_findings: totalFindings,
       categories: aggregate,
@@ -330,6 +422,81 @@ async function main() {
   );
 
   if (processed.length === 0) process.exitCode = 2;
+}
+
+async function restoreFile(args) {
+  if (!args.mappingPath || !args.inputFile || !args.outputFile) {
+    throw new Error(
+      "Restore mode requires --mapping, --input, and --output paths.",
+    );
+  }
+
+  const mappingPath = path.resolve(args.mappingPath);
+  const inputPath = path.resolve(args.inputFile);
+  const outputPath = path.resolve(args.outputFile);
+  if (inputPath === outputPath || mappingPath === outputPath) {
+    throw new Error("Restore output must be a new, separate file.");
+  }
+
+  const [inputInfo, mappingInfo] = await Promise.all([
+    lstat(inputPath),
+    lstat(mappingPath),
+  ]);
+  if (
+    inputInfo.isSymbolicLink() ||
+    !inputInfo.isFile() ||
+    inputInfo.size > MAX_BYTES
+  ) {
+    throw new Error("Restore input must be a regular UTF-8 file under 5 MB.");
+  }
+  if (mappingInfo.isSymbolicLink() || !mappingInfo.isFile()) {
+    throw new Error("Mapping must be a regular SafeContext mapping file.");
+  }
+
+  const mappingDocument = JSON.parse(await readFile(mappingPath, "utf8"));
+  if (
+    mappingDocument?.version !== 1 ||
+    !mappingDocument.tokens ||
+    typeof mappingDocument.tokens !== "object" ||
+    Array.isArray(mappingDocument.tokens)
+  ) {
+    throw new Error("Unsupported or invalid SafeContext mapping.");
+  }
+
+  const aiResponse = await readFile(inputPath, "utf8");
+  if (aiResponse.includes("\u0000")) {
+    throw new Error("Restore input appears to contain binary content.");
+  }
+
+  const result = restore(aiResponse, mappingDocument.tokens);
+  await mkdir(path.dirname(outputPath), { recursive: true, mode: 0o700 });
+  await writeFile(outputPath, result.output, {
+    encoding: "utf8",
+    mode: 0o600,
+    flag: "wx",
+  });
+
+  console.log(
+    JSON.stringify({
+      ok: true,
+      output: safeRelative(outputPath),
+      restored_placeholders: result.restoredCount,
+      unresolved_placeholders: result.unresolvedTokens.length,
+    }),
+  );
+}
+
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  if (args.help) {
+    help();
+    return;
+  }
+  if (args.mode === "restore") {
+    await restoreFile(args);
+    return;
+  }
+  await sanitizeFiles(args);
 }
 
 main().catch((error) => {

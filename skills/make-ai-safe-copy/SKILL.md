@@ -1,6 +1,6 @@
 ---
 name: make-ai-safe-copy
-description: Create sanitized local copies of text, code, configuration, Markdown, CSV, JSON, and similar files before their contents are shared with an AI. Use when a user wants to send files or workspace context to ChatGPT, Codex, Claude, Gemini, or another model and mentions secrets, credentials, PII, client data, confidential company terms, privacy, redaction, pseudonymization, or data-leakage risk.
+description: Create sanitized local copies of text, code, configuration, Markdown, CSV, JSON, and similar files before their contents are shared with an AI, then restore placeholders locally after the AI task. Use when a user wants to send files or workspace context to ChatGPT, Codex, Claude, Gemini, or another model and mentions secrets, credentials, PII, client data, confidential company terms, privacy, redaction, pseudonymization, restoration, or data-leakage risk.
 ---
 
 # Make AI-Safe Copy
@@ -15,6 +15,10 @@ the model context. Report what was detected without printing detected values.
 - Use only paths the user supplied or clearly placed in scope.
 - Never pass original contents as a command-line argument.
 - Keep `.ai-safe/report.json` free of detected values and replacement mappings.
+- Never read, print, summarize, or share `.ai-safe/private/mapping.json`. It
+  contains the original values and exists only for the local restore command.
+- Never read or place a restored output into model context. Restoration is the
+  final local handoff back to the user.
 - Treat the output as risk reduction, not guaranteed anonymization or
   compliance. Ask the user to review it before external sharing.
 
@@ -41,6 +45,20 @@ the model context. Report what was detected without printing detected values.
 5. Read or share only files inside `.ai-safe/files/` for the downstream AI
    task. Do not open the originals afterward unless the user explicitly asks
    and understands that doing so exposes them to the current model context.
+6. If the downstream result needs private values restored, first write the
+   AI-produced text with placeholders to a new local file such as
+   `.ai-safe/ai-response.txt`. Then run:
+
+   ```bash
+   node "<skill-root>/scripts/safectx.mjs" restore \
+     --mapping ".ai-safe/private/mapping.json" \
+     --input ".ai-safe/ai-response.txt" \
+     --output ".ai-safe/restored-response.txt"
+   ```
+
+7. Report only the output path and the returned restored/unresolved counts.
+   Do not open `.ai-safe/private/mapping.json` or the restored output. If the
+   destination already exists, choose a new filename; never overwrite it.
 
 ## Supported first-version inputs
 
@@ -61,6 +79,8 @@ The first version detects common API keys, AWS and GitHub credential shapes,
 email addresses, phone numbers, US Social Security numbers, payment-card-like
 numbers, IPv4 addresses, and explicit custom terms. Contextual trade secrets
 that do not match an explicit term may remain.
+Tokens are stable across all files in one sanitize run so the private mapping
+can restore an AI result consistently.
 
 ## Failure handling
 
@@ -70,3 +90,5 @@ that do not match an explicit term may remain.
 - If the output directory overlaps an input, exclude the output directory from
   scanning.
 - Never silently overwrite the original file.
+- If restore reports unresolved placeholders, tell the user to inspect the
+  local result rather than revealing it to the model.

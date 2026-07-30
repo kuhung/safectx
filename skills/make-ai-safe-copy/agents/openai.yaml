@@ -1,4 +1,4 @@
 interface:
   display_name: "Make AI-Safe Copy"
-  short_description: "Sanitize local files before sharing them with an AI."
-  default_prompt: "Create an AI-safe copy of these files locally, show me the risk report, and do not read the originals into the model context."
+  short_description: "Sanitize before AI, then restore locally."
+  default_prompt: "Create an AI-safe copy of these files locally, show me the risk report, and keep originals, the private mapping, and restored output out of model context."
