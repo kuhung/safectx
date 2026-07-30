@@ -1,10 +1,12 @@
 {
   "name": "safectx",
-  "version": "0.2.0",
-  "description": "Create AI-safe copies before model use and restore private values locally afterward.",
+  "version": "0.3.0",
+  "description": "Create a sanitized local copy before an AI reads sensitive work files.",
   "author": {
     "name": "SafeContext"
   },
+  "homepage": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=codex&utm_medium=marketplace&utm_campaign=agent-preview-v1&utm_content=plugin-detail&variant=manual_cleanup",
+  "repository": "https://github.com/kuhung/safectx",
   "keywords": [
     "privacy",
     "redaction",
@@ -15,20 +17,23 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "SafeContext",
-    "shortDescription": "Sanitize before AI, then restore locally.",
-    "longDescription": "SafeContext creates deterministic copies under .ai-safe, keeps the reversible mapping private, reports risk categories without printing detected values, and restores the AI result locally without returning private values to model context.",
+    "shortDescription": "Make a local AI-safe copy before sharing.",
+    "longDescription": "SafeContext creates deterministic sanitized copies under .ai-safe before an agent reads supported work files. Originals stay untouched, reports show only categories and counts, and private values remain on the device.",
     "developerName": "SafeContext",
     "category": "Productivity",
     "capabilities": [
       "Local file processing",
       "Privacy risk report",
-      "Local placeholder restoration"
+      "Stable placeholder replacement"
     ],
     "defaultPrompt": [
       "Make an AI-safe copy of these files before reading them.",
       "Scan this workspace for secrets and create sanitized copies.",
-      "Restore the AI response locally without reading the private result."
+      "Replace this client name locally, then read only the safe copy."
     ],
-    "brandColor": "#184F38"
+    "brandColor": "#184F38",
+    "websiteURL": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/",
+    "privacyPolicyURL": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/privacy",
+    "termsOfServiceURL": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/terms"
   }
 }

@@ -1,5 +1,5 @@
 {
   "name": "safectx",
-  "version": "0.2.0",
-  "description": "Create AI-safe copies before model use and restore private values locally afterward."
+  "version": "0.3.0",
+  "description": "Create a sanitized local copy before an AI reads sensitive work files."
 }

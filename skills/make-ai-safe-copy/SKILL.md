@@ -1,6 +1,6 @@
 ---
 name: make-ai-safe-copy
-description: Create sanitized local copies of text, code, configuration, Markdown, CSV, JSON, and similar files before their contents are shared with an AI, then restore placeholders locally after the AI task. Use when a user wants to send files or workspace context to ChatGPT, Codex, Claude, Gemini, or another model and mentions secrets, credentials, PII, client data, confidential company terms, privacy, redaction, pseudonymization, restoration, or data-leakage risk.
+description: Create sanitized local copies of text, code, configuration, Markdown, CSV, JSON, and similar files before an AI reads them. Use when a user wants to share files or workspace context with ChatGPT, Codex, Claude, Gemini, or another model and mentions secrets, credentials, PII, client data, confidential company terms, privacy, redaction, pseudonymization, or data-leakage risk.
 ---
 
 # Make AI-Safe Copy
@@ -45,9 +45,14 @@ the model context. Report what was detected without printing detected values.
 5. Read or share only files inside `.ai-safe/files/` for the downstream AI
    task. Do not open the originals afterward unless the user explicitly asks
    and understands that doing so exposes them to the current model context.
-6. If the downstream result needs private values restored, first write the
-   AI-produced text with placeholders to a new local file such as
-   `.ai-safe/ai-response.txt`. Then run:
+6. Stop after handing the sanitized copy to the downstream task unless the user
+   explicitly asks for private values to be restored into an AI-produced result.
+
+## Optional local restoration
+
+Restoration is not part of the default workflow or product promise. When the
+user explicitly asks for it, first write the AI-produced text with placeholders
+to a new local file such as `.ai-safe/ai-response.txt`. Then run:
 
    ```bash
    node "<skill-root>/scripts/safectx.mjs" restore \
@@ -56,9 +61,9 @@ the model context. Report what was detected without printing detected values.
      --output ".ai-safe/restored-response.txt"
    ```
 
-7. Report only the output path and the returned restored/unresolved counts.
-   Do not open `.ai-safe/private/mapping.json` or the restored output. If the
-   destination already exists, choose a new filename; never overwrite it.
+Report only the output path and the returned restored/unresolved counts. Do not
+open `.ai-safe/private/mapping.json` or the restored output. If the destination
+already exists, choose a new filename; never overwrite it.
 
 ## Supported first-version inputs
 
