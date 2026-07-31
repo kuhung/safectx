@@ -54,6 +54,13 @@ codex plugin marketplace add kuhung/safectx --ref main
 codex plugin add safectx@safectx
 ```
 
+Claude Code can add the same public repository as a marketplace:
+
+```bash
+claude plugin marketplace add kuhung/safectx
+claude plugin install safectx@safectx
+```
+
 Gemini CLI can install the public release directly from GitHub:
 
 ```bash

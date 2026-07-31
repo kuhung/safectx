@@ -1,0 +1,37 @@
+{
+  "name": "safectx",
+  "description": "Local privacy checkpoints before work reaches an AI agent.",
+  "owner": {
+    "name": "SafeContext"
+  },
+  "plugins": [
+    {
+      "name": "safectx",
+      "source": {
+        "source": "github",
+        "repo": "kuhung/safectx",
+        "ref": "v0.3.0"
+      },
+      "description": "Create a sanitized local copy before an AI reads sensitive work files.",
+      "version": "0.3.0",
+      "author": {
+        "name": "SafeContext"
+      },
+      "homepage": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/",
+      "repository": "https://github.com/kuhung/safectx",
+      "keywords": [
+        "privacy",
+        "redaction",
+        "secrets",
+        "pii",
+        "ai-safety"
+      ],
+      "category": "Productivity",
+      "tags": [
+        "local-first",
+        "safe-copy",
+        "data-privacy"
+      ]
+    }
+  ]
+}
