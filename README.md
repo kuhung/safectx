@@ -47,6 +47,13 @@ This repository includes:
 - `gemini-extension.json` for Gemini CLI
 - `skills/make-ai-safe-copy/SKILL.md` as the shared agent workflow
 
+Codex CLI can add the public marketplace and install the versioned plugin:
+
+```bash
+codex plugin marketplace add kuhung/safectx --ref main
+codex plugin add safectx@safectx
+```
+
 Gemini CLI can install the public release directly from GitHub:
 
 ```bash

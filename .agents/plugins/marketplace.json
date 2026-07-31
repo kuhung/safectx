@@ -1,0 +1,21 @@
+{
+  "name": "safectx",
+  "interface": {
+    "displayName": "SafeContext"
+  },
+  "plugins": [
+    {
+      "name": "safectx",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/kuhung/safectx",
+        "ref": "v0.3.0"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
