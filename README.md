@@ -47,7 +47,7 @@ This repository includes:
 - `gemini-extension.json` for Gemini CLI
 - `skills/make-ai-safe-copy/SKILL.md` as the shared agent workflow
 
-Once this repository is public, Gemini CLI can install it from GitHub:
+Gemini CLI can install the public release directly from GitHub:
 
 ```bash
 gemini extensions install kuhung/safectx --ref v0.3.0
