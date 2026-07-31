@@ -1,0 +1,83 @@
+name: Missed sensitive category
+description: Tell us what SafeContext failed to catch without sharing the sensitive value.
+title: "[Missed detection] "
+labels:
+  - "feedback: missed detection"
+  - "needs triage"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for helping improve SafeContext.
+
+        **Do not paste real secrets, customer data, internal names, document excerpts, screenshots, or private logs.** Describe the category and use a synthetic example only.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did this happen?
+      options:
+        - Browser cleaner
+        - Codex plugin
+        - Claude Code plugin
+        - Gemini CLI extension
+        - Local scanner command
+    validations:
+      required: true
+  - type: dropdown
+    id: input_type
+    attributes:
+      label: What kind of input was it?
+      options:
+        - Plain text or Markdown
+        - Source code
+        - Configuration file
+        - CSV, JSON, YAML, or TOML
+        - Unsupported file type
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Which category was missed?
+      options:
+        - Email address or phone number
+        - API key, token, or credential
+        - IP address or internal hostname
+        - Client or company name
+        - Project codename or custom term
+        - Account or financial identifier
+        - Contextual trade secret
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: synthetic_example
+    attributes:
+      label: Synthetic reproduction
+      description: Replace every real value with an invented one. A short example and the expected placeholder are enough.
+      placeholder: |
+        Synthetic input: "Send the draft to Example Client."
+        Expected: "Send the draft to <CUSTOM_1>."
+        Actual: unchanged
+    validations:
+      required: true
+  - type: dropdown
+    id: consequence
+    attributes:
+      label: What did the miss make you do?
+      options:
+        - I noticed and fixed it manually
+        - I stopped using the result
+        - I stopped using SafeContext
+        - I shared the result before noticing
+        - I was testing only; no real workflow was affected
+    validations:
+      required: true
+  - type: checkboxes
+    id: data_hygiene
+    attributes:
+      label: Data hygiene
+      options:
+        - label: I confirm this report contains no real secret, customer data, internal name, private document excerpt, or confidential screenshot.
+          required: true

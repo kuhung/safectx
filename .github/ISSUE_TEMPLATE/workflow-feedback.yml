@@ -1,0 +1,95 @@
+name: Real workflow feedback
+description: Describe the kind of work you hesitated to give an AI, without sharing its contents.
+title: "[Workflow] "
+labels:
+  - "feedback: workflow"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form tests whether SafeContext solves a repeated work problem.
+
+        Describe the workflow and categories only. **Do not include names, text excerpts, customer data, secrets, screenshots, or files.**
+  - type: dropdown
+    id: role
+    attributes:
+      label: Which role is closest to yours?
+      options:
+        - Engineering or security
+        - Product or research
+        - Customer support or success
+        - Consulting or agency
+        - Legal, compliance, or finance
+        - Recruiting or people operations
+        - Founder or independent professional
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: material
+    attributes:
+      label: What kind of material did you hesitate to give an AI?
+      options:
+        - Client email or notes
+        - Support ticket or CRM note
+        - Incident log or configuration
+        - Source code or repository file
+        - Contract, proposal, or internal brief
+        - Research or interview material
+        - Spreadsheet or structured export
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often does this workflow occur?
+      options:
+        - Several times a day
+        - Several times a week
+        - Several times a month
+        - Less than monthly
+        - This was a one-off test
+    validations:
+      required: true
+  - type: dropdown
+    id: current_workaround
+    attributes:
+      label: What do you normally do?
+      options:
+        - Remove sensitive details manually
+        - Use approved synthetic data
+        - Use an internal or enterprise AI tool
+        - Ask for approval
+        - Avoid using AI for this task
+        - No consistent process
+    validations:
+      required: true
+  - type: dropdown
+    id: outcome
+    attributes:
+      label: After trying SafeContext, what is your next action?
+      options:
+        - Use it again on another approved task
+        - Keep it installed but wait for another task
+        - Recommend it to a teammate
+        - Consider a paid individual version
+        - Discuss a paid team pilot
+        - Uninstall or stop using it
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: What determined that choice?
+      description: Explain the workflow friction or value in general terms only.
+      placeholder: Category-level feedback only; no document content.
+    validations:
+      required: true
+  - type: checkboxes
+    id: data_hygiene
+    attributes:
+      label: Data hygiene
+      options:
+        - label: I confirm this report contains no confidential content or identifying details.
+          required: true

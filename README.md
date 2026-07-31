@@ -82,6 +82,16 @@ enterprise DLP. Review every sanitized copy before sharing it externally.
 Optional local restoration exists for workflows that require it, but it is not
 the default product promise.
 
+## Help validate the workflow
+
+Please report categories and synthetic reproductions only—never paste real
+secrets, customer data, internal names, document excerpts, screenshots, or
+private logs.
+
+- [Report a missed sensitive category](https://github.com/kuhung/safectx/issues/new?template=missed-detection.yml)
+- [Report an incorrect replacement](https://github.com/kuhung/safectx/issues/new?template=false-positive.yml)
+- [Share real workflow feedback](https://github.com/kuhung/safectx/issues/new?template=workflow-feedback.yml)
+
 ## Development
 
 Requires Node.js 22 or newer.

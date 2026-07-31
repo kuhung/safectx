@@ -1,0 +1,67 @@
+name: Incorrect replacement
+description: Report a harmless value that SafeContext replaced, using synthetic data only.
+title: "[Incorrect replacement] "
+labels:
+  - "feedback: incorrect replacement"
+  - "needs triage"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Do not paste real secrets, customer data, internal names, document excerpts, screenshots, or private logs.** Reproduce the behavior with invented values only.
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where did this happen?
+      options:
+        - Browser cleaner
+        - Codex plugin
+        - Claude Code plugin
+        - Gemini CLI extension
+        - Local scanner command
+    validations:
+      required: true
+  - type: dropdown
+    id: detected_as
+    attributes:
+      label: What did SafeContext think it found?
+      options:
+        - Email address or phone number
+        - API key, token, or credential
+        - IP address or internal hostname
+        - Client or company name
+        - Project codename or custom term
+        - Account or financial identifier
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: synthetic_example
+    attributes:
+      label: Synthetic reproduction
+      description: Invent a short example that triggers the same incorrect replacement.
+      placeholder: |
+        Synthetic input: "Version abc_123 is public."
+        Actual: "Version <SECRET_1> is public."
+        Expected: unchanged
+    validations:
+      required: true
+  - type: dropdown
+    id: consequence
+    attributes:
+      label: What did the incorrect replacement make you do?
+      options:
+        - I accepted the replacement
+        - I edited the safe copy manually
+        - I reran the scan with different rules
+        - I stopped using the result
+        - I stopped using SafeContext
+    validations:
+      required: true
+  - type: checkboxes
+    id: data_hygiene
+    attributes:
+      label: Data hygiene
+      options:
+        - label: I confirm this report contains synthetic data only.
+          required: true
