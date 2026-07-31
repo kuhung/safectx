@@ -1,5 +1,7 @@
 # SafeContext
 
+![SafeContext turns sensitive work into a local AI-safe copy](assets/social-card.png)
+
 Your work can use AI. Your sensitive details do not have to.
 
 SafeContext adds a local checkpoint before an AI agent reads work files. It
