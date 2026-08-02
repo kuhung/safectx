@@ -1,34 +1,47 @@
 # SafeContext
 
-![SafeContext turns sensitive work into a local AI-safe copy](assets/social-card.png)
+![SafeContext checks sensitive work locally before it reaches AI](assets/social-card.png)
 
-Your work can use AI. Your sensitive details do not have to.
+**Keep the useful context. Remove what should stay private.**
 
-SafeContext adds a local checkpoint before an AI agent reads work files. It
-creates a separate `.ai-safe/` copy, replaces common identifiers and secrets
-with stable placeholders, and reports only categories and counts.
+SafeContext is testing one moment: you have useful work text for ChatGPT,
+Claude, Copilot, or Codex, but part of it should not leave your device.
 
-[Try the browser demo](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=agent-preview-v1&utm_content=readme-demo&variant=manual_cleanup)
+The browser demo runs locally, shows every replacement, and never uploads the
+text. Choose the task closest to your real work:
+
+- [Client report](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=launch-v3-scene-evidence&utm_content=readme-client-report&variant=scene_outcome&scene=client_report)
+- [Support ticket](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=launch-v3-scene-evidence&utm_content=readme-support-ticket&variant=scene_outcome&scene=support_ticket)
+- [Error log](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=launch-v3-scene-evidence&utm_content=readme-error-log&variant=scene_outcome&scene=error_log)
+
+This is a market test, not a claim that redaction makes confidential work safe
+or compliant. We are measuring edited-input completion, cleaned-copy reuse, the
+current workaround, and real next commitments—not page traffic alone.
 
 ## What stays local
 
-- Original files
+- Source text and files
 - Detected values
 - Custom company and project terms
 - The private placeholder mapping
 
-The scanner makes no network requests. Originals are never modified.
+The browser scanner and packaged agent workflow make no network requests for
+detection. Originals are never silently modified.
 
-## Supported inputs
+## Agent package
 
-The preview supports regular UTF-8 text, Markdown, CSV, JSON, YAML, TOML,
-configuration files, and common source-code formats. It intentionally skips
-symlinks, binary files, files larger than 5 MB, generated directories, PDF,
-Office documents, images, archives, and email containers.
+The repository also contains the 0.3.0 local agent workflow for synthetic or
+already-public files. It creates a separate `.ai-safe/` copy with stable
+placeholders.
 
-## Try it locally
+Supported package formats:
 
-Use synthetic or already-public content for the first run:
+- `.codex-plugin/plugin.json` for Codex
+- `.claude-plugin/plugin.json` for Claude Code
+- `gemini-extension.json` for Gemini CLI
+- `skills/make-ai-safe-copy/SKILL.md` as the shared workflow
+
+Try the CLI only with synthetic or already-public content:
 
 ```bash
 node skills/make-ai-safe-copy/scripts/safectx.mjs sanitize \
@@ -37,60 +50,42 @@ node skills/make-ai-safe-copy/scripts/safectx.mjs sanitize \
   ./example
 ```
 
-Read `.ai-safe/report.json`, then let the AI work only with files inside
-`.ai-safe/files/`.
-
-## Agent packages
-
-This repository includes:
-
-- `.codex-plugin/plugin.json` for Codex
-- `.claude-plugin/plugin.json` for Claude Code
-- `gemini-extension.json` for Gemini CLI
-- `skills/make-ai-safe-copy/SKILL.md` as the shared agent workflow
-
-Codex CLI can add the public marketplace and install the versioned plugin:
+Codex CLI:
 
 ```bash
 codex plugin marketplace add kuhung/safectx --ref main
 codex plugin add safectx@safectx
 ```
 
-Claude Code can add the same public repository as a marketplace:
+Claude Code:
 
 ```bash
 claude plugin marketplace add kuhung/safectx
 claude plugin install safectx@safectx
 ```
 
-Gemini CLI can install the public release directly from GitHub:
+Gemini CLI:
 
 ```bash
 gemini extensions install kuhung/safectx --ref v0.3.0
 ```
 
-Codex and Claude marketplace instructions will be added after their first
-catalog submission. The included manifests can already be validated or tested
-locally.
-
 ## Capability boundary
 
-SafeContext reduces accidental exposure; it does not detect every confidential
-fact, make any document safe, provide a compliance guarantee, or replace
-enterprise DLP. Review every sanitized copy before sharing it externally.
+SafeContext reduces accidental exposure. It does not detect every confidential
+fact, make a document safe, provide a compliance guarantee, or replace an
+approved enterprise AI, DLP, or human review.
 
-Optional local restoration exists for workflows that require it, but it is not
-the default product promise.
+## Help test the actual workflow
 
-## Help validate the workflow
-
-Please report categories and synthetic reproductions only—never paste real
-secrets, customer data, internal names, document excerpts, screenshots, or
+Please describe the last real task and your current workaround, but never paste
+real secrets, customer data, internal names, document excerpts, screenshots, or
 private logs.
 
+- [Compare the three scenes and share your workaround](https://github.com/kuhung/safectx/issues)
 - [Report a missed sensitive category](https://github.com/kuhung/safectx/issues/new?template=missed-detection.yml)
 - [Report an incorrect replacement](https://github.com/kuhung/safectx/issues/new?template=false-positive.yml)
-- [Share real workflow feedback](https://github.com/kuhung/safectx/issues/new?template=workflow-feedback.yml)
+- [Share workflow feedback](https://github.com/kuhung/safectx/issues/new?template=workflow-feedback.yml)
 
 ## Development
 
