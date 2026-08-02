@@ -2,6 +2,8 @@
 
 ![SafeContext checks sensitive work locally before it reaches AI](assets/social-card.png)
 
+[![Install with Agent Skills](https://skills.sh/b/kuhung/safectx)](https://www.skills.sh/kuhung/safectx/make-ai-safe-copy)
+
 **Keep the useful context. Remove what should stay private.**
 
 SafeContext is testing one moment: you have useful work text for ChatGPT,
@@ -48,6 +50,12 @@ node skills/make-ai-safe-copy/scripts/safectx.mjs sanitize \
   --out-dir .ai-safe \
   --term "Example Project" \
   ./example
+```
+
+Agent Skills CLI:
+
+```bash
+npx skills add https://github.com/kuhung/safectx --skill make-ai-safe-copy
 ```
 
 Codex CLI:
