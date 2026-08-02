@@ -82,7 +82,7 @@ Please describe the last real task and your current workaround, but never paste
 real secrets, customer data, internal names, document excerpts, screenshots, or
 private logs.
 
-- [Compare the three scenes and share your workaround](https://github.com/kuhung/safectx/issues)
+- [Compare the three scenes and share your workaround](https://github.com/kuhung/safectx/issues/1)
 - [Report a missed sensitive category](https://github.com/kuhung/safectx/issues/new?template=missed-detection.yml)
 - [Report an incorrect replacement](https://github.com/kuhung/safectx/issues/new?template=false-positive.yml)
 - [Share workflow feedback](https://github.com/kuhung/safectx/issues/new?template=workflow-feedback.yml)
