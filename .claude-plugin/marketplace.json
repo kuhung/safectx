@@ -10,14 +10,14 @@
       "source": {
         "source": "github",
         "repo": "kuhung/contextarmor",
-        "ref": "v0.4.0"
+        "ref": "v0.4.1"
       },
       "description": "Audit AI exposure locally, track private risk trends, and create sanitized copies.",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "author": {
         "name": "ContextArmor"
       },
-      "homepage": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/",
+      "homepage": "https://contextarmor.vercel.app/",
       "repository": "https://github.com/kuhung/contextarmor",
       "keywords": [
         "privacy",

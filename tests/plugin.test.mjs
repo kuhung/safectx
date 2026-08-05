@@ -58,7 +58,7 @@ test("creates a separate safe copy without exposing values in the report", async
   assert.equal((await stat(mapping)).mode & 0o777, 0o600);
 });
 
-test("keeps plugin metadata and distribution URLs aligned for 0.4.0", async () => {
+test("keeps plugin metadata and distribution URLs aligned for 0.4.1", async () => {
   const files = [
     "package.json",
     ".codex-plugin/plugin.json",
@@ -72,11 +72,11 @@ test("keeps plugin metadata and distribution URLs aligned for 0.4.0", async () =
   );
 
   assert.equal(documents[0].name, "contextarmor");
-  assert.equal(documents[0].version, "0.4.0");
-  assert.equal(documents[1].version, "0.4.0");
-  assert.equal(documents[2].version, "0.4.0");
-  assert.equal(documents[3].plugins[0].version, "0.4.0");
-  assert.equal(documents[5].version, "0.4.0");
+  assert.equal(documents[0].version, "0.4.1");
+  assert.equal(documents[1].version, "0.4.1");
+  assert.equal(documents[2].version, "0.4.1");
+  assert.equal(documents[3].plugins[0].version, "0.4.1");
+  assert.equal(documents[5].version, "0.4.1");
 
   for (const document of documents) {
     const serialized = JSON.stringify(document);

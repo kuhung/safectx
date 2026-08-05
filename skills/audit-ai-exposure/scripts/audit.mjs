@@ -16,7 +16,7 @@ import process from "node:process";
 const MAX_BYTES = 25 * 1024 * 1024;
 const DEFAULT_STORE = path.join(homedir(), ".contextarmor", "audit");
 const DEFAULT_PROTECTION_URL =
-  "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/";
+  "https://contextarmor.vercel.app/r/audit";
 const SUPPORTED_EXTENSIONS = new Set([
   ".txt",
   ".md",

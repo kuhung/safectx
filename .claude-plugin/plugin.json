@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "contextarmor",
   "displayName": "ContextArmor",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Audit AI exposure locally, track private risk trends, and create sanitized copies.",
   "author": {
     "name": "ContextArmor"

@@ -1,11 +1,11 @@
 {
   "name": "contextarmor",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Audit AI exposure locally, track private risk trends, and create sanitized copies.",
   "author": {
     "name": "ContextArmor"
   },
-  "homepage": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=codex&utm_medium=marketplace&utm_campaign=agent-preview-v1&utm_content=plugin-detail&variant=manual_cleanup",
+  "homepage": "https://contextarmor.vercel.app/?utm_source=codex&utm_medium=marketplace&utm_campaign=contextarmor-v1&utm_content=plugin-detail",
   "repository": "https://github.com/kuhung/contextarmor",
   "license": "MIT",
   "keywords": [
@@ -34,8 +34,8 @@
       "Scan this workspace for secrets and create sanitized copies."
     ],
     "brandColor": "#184F38",
-    "websiteURL": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/",
-    "privacyPolicyURL": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/privacy",
-    "termsOfServiceURL": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/terms"
+    "websiteURL": "https://contextarmor.vercel.app/",
+    "privacyPolicyURL": "https://contextarmor.vercel.app/privacy",
+    "termsOfServiceURL": "https://contextarmor.vercel.app/terms"
   }
 }

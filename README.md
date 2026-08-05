@@ -87,7 +87,7 @@ claude plugin install contextarmor@contextarmor
 Gemini CLI:
 
 ```bash
-gemini extensions install kuhung/contextarmor --ref v0.4.0
+gemini extensions install kuhung/contextarmor --ref v0.4.1
 ```
 
 ## What stays local
@@ -114,7 +114,7 @@ not provided as custom terms may remain.
 
 ## Product and research
 
-- [Try the local browser checkpoint](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=contextarmor-v1&utm_content=readme)
+- [See the local protection workflow](https://contextarmor.vercel.app/?utm_source=github&utm_medium=repository&utm_campaign=contextarmor-v1&utm_content=readme)
 - [Report a missed category](https://github.com/kuhung/contextarmor/issues/new?template=missed-detection.yml)
 - [Report an incorrect detection](https://github.com/kuhung/contextarmor/issues/new?template=false-positive.yml)
 - [Share workflow feedback](https://github.com/kuhung/contextarmor/issues/new?template=workflow-feedback.yml)

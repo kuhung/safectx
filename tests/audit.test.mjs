@@ -20,6 +20,32 @@ function run(args, cwd) {
   });
 }
 
+function runWithDefaultProtectionUrl(args, cwd) {
+  const cleanEnvironment = { ...process.env };
+  delete cleanEnvironment.CONTEXTARMOR_PROTECTION_URL;
+  return spawnSync(process.execPath, [script, ...args], {
+    cwd,
+    encoding: "utf8",
+    env: cleanEnvironment,
+  });
+}
+
+test("uses the production audit landing route by default", async () => {
+  const root = await mkdtemp(path.join(tmpdir(), "contextarmor-production-link-test-"));
+  const store = path.join(root, "stats");
+  const source = path.join(root, "chat.md");
+  await writeFile(source, "Synthetic note without sensitive data.\n");
+
+  const result = runWithDefaultProtectionUrl(
+    ["scan", "--client", "other", "--store-dir", store, source],
+    root,
+  );
+  assert.equal(result.status, 0, result.stderr);
+  const conversion = new URL(JSON.parse(result.stdout).conversion.url);
+  assert.equal(conversion.origin, "https://contextarmor.vercel.app");
+  assert.equal(conversion.pathname, "/r/audit");
+});
+
 test("audits selected transcripts and stores only aggregate local trends", async () => {
   const root = await mkdtemp(path.join(tmpdir(), "contextarmor-audit-test-"));
   const transcripts = path.join(root, "transcripts");
