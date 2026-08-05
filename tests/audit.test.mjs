@@ -13,6 +13,10 @@ function run(args, cwd) {
   return spawnSync(process.execPath, [script, ...args], {
     cwd,
     encoding: "utf8",
+    env: {
+      ...process.env,
+      CONTEXTARMOR_PROTECTION_URL: "https://contextarmor.example/r/audit",
+    },
   });
 }
 
@@ -58,9 +62,19 @@ test("audits selected transcripts and stores only aggregate local trends", async
   assert.equal(payload.trends.today.audits, 1);
   assert.equal(payload.trends.today.findings, 3);
   assert.equal(payload.trends.daily.length, 7);
+  assert.equal(payload.engagement.audit_number, 1);
+  assert.equal(payload.engagement.repeat_audit, false);
+  const conversion = new URL(payload.conversion.url);
+  assert.equal(conversion.origin, "https://contextarmor.example");
+  assert.equal(conversion.pathname, "/r/audit");
+  assert.match(conversion.searchParams.get("aid"), /^[a-f0-9]{32}$/);
+  assert.equal(conversion.searchParams.get("an"), "1");
+  assert.equal(conversion.searchParams.get("client"), "codex");
+  assert.equal(conversion.searchParams.get("band"), "1-5");
 
   const eventsPath = path.join(store, "events.jsonl");
   const reportPath = path.join(store, "latest-report.json");
+  const installIdPath = path.join(store, "anonymous-install-id");
   const events = await readFile(eventsPath, "utf8");
   const report = await readFile(reportPath, "utf8");
   assert.doesNotMatch(events, /maya\.synthetic|SyntheticKey|Project Atlas|conversation\.jsonl/);
@@ -68,11 +82,13 @@ test("audits selected transcripts and stores only aggregate local trends", async
   assert.equal((await stat(store)).mode & 0o777, 0o700);
   assert.equal((await stat(eventsPath)).mode & 0o777, 0o600);
   assert.equal((await stat(reportPath)).mode & 0o777, 0o600);
+  assert.equal((await stat(installIdPath)).mode & 0o777, 0o600);
 
   const trendResult = run(["report", "--store-dir", store], root);
   assert.equal(trendResult.status, 0, trendResult.stderr);
   const trend = JSON.parse(trendResult.stdout);
   assert.equal(trend.recorded_audits, 1);
+  assert.equal(trend.engagement.repeat_audit, false);
   assert.equal(trend.trends.this_week.findings, 3);
 });
 
@@ -95,6 +111,11 @@ test("makes repeated observations explicit instead of claiming unique leaks", as
   assert.equal(trend.recorded_audits, 2);
   assert.equal(trend.trends.today.audits, 2);
   assert.equal(trend.trends.today.findings, 2);
+  assert.equal(trend.engagement.audit_number, 2);
+  assert.equal(trend.engagement.repeat_audit, true);
+  const conversion = new URL(trend.conversion.url);
+  assert.equal(conversion.searchParams.get("an"), "2");
+  assert.equal(conversion.searchParams.get("client"), "claude-code");
   assert.match(trend.limitations.join(" "), /Repeated scans/);
 });
 

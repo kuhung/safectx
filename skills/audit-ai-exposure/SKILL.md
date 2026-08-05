@@ -48,7 +48,11 @@ detected values or placing transcript contents into the current model context.
    - the limitations and the fact that repeated scans can observe the same
      occurrence again.
 6. If findings exist, point to the paid/local protection path configured by the
-   product surface, but do not claim that this Skill prevented the exposure.
+   `conversion.url` field, but do not claim that this Skill prevented the
+   exposure. Show the URL for the user to open; do not open it automatically.
+   Explain that opening it voluntarily shares only the random installation ID,
+   audit number, client label, and finding-count band described in
+   `conversion.privacy`, never transcript text or detected values.
 
 ## Trends
 

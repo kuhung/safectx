@@ -39,6 +39,13 @@ The local event store contains only timestamps, client labels, counts,
 categories, severities, and skip reasons. Repeated scans may observe the same
 occurrence again, so the report does not call findings unique leaks.
 
+Each report also contains a protection link with a random 128-bit installation
+ID, local audit number, client label, and finding-count band. The scanner does
+not open the link or make a network request. If the user chooses to open it,
+those aggregate fields can connect first audit, repeat audit, checkout, and paid
+conversion without sending transcript text, detected values, filenames, or
+custom terms.
+
 ## Local safe copy
 
 The `make-ai-safe-copy` Skill creates a separate `.ai-safe/` copy with stable
@@ -88,6 +95,7 @@ gemini extensions install kuhung/contextarmor --ref v0.4.0
 - Selected transcripts and source files
 - Detected values and custom client/project terms
 - Aggregate day/week event history
+- Random local installation ID used only after a user voluntarily opens the protection link
 - Private placeholder mappings
 
 The bundled scanners make no network requests. They do not silently modify
@@ -117,6 +125,10 @@ or internal screenshots into a public issue.
 ## Development
 
 Requires Node.js 22 or newer.
+
+Release builds set `CONTEXTARMOR_PROTECTION_URL` to the deployed `/r/audit`
+endpoint. Development and tests can override it without changing the local
+scan or storage boundary.
 
 ```bash
 npm test

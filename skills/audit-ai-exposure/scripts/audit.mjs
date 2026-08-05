@@ -9,11 +9,14 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { homedir } from "node:os";
+import { randomBytes } from "node:crypto";
 import path from "node:path";
 import process from "node:process";
 
 const MAX_BYTES = 25 * 1024 * 1024;
 const DEFAULT_STORE = path.join(homedir(), ".contextarmor", "audit");
+const DEFAULT_PROTECTION_URL =
+  "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/";
 const SUPPORTED_EXTENSIONS = new Set([
   ".txt",
   ".md",
@@ -263,6 +266,65 @@ function emptySummary() {
   return { audits: 0, sources: 0, findings: 0, categories: {}, severities: {} };
 }
 
+function findingBand(count) {
+  if (count === 0) return "0";
+  if (count <= 5) return "1-5";
+  if (count <= 20) return "6-20";
+  return "21plus";
+}
+
+async function ensureAnonymousInstallId(storeRoot) {
+  const installIdPath = path.join(storeRoot, "anonymous-install-id");
+  try {
+    const existing = (await readFile(installIdPath, "utf8")).trim();
+    if (/^[a-f0-9]{32}$/.test(existing)) return existing;
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  const created = randomBytes(16).toString("hex");
+  try {
+    await writeFile(installIdPath, `${created}\n`, {
+      encoding: "utf8",
+      mode: 0o600,
+      flag: "wx",
+    });
+    return created;
+  } catch (error) {
+    if (error.code !== "EEXIST") throw error;
+    const existing = (await readFile(installIdPath, "utf8")).trim();
+    if (!/^[a-f0-9]{32}$/.test(existing)) {
+      throw new Error("Local anonymous installation identifier is invalid.");
+    }
+    return existing;
+  }
+}
+
+function buildConversion(urlValue, anonymousId, event, auditNumber) {
+  let url;
+  try {
+    url = new URL(urlValue || DEFAULT_PROTECTION_URL);
+  } catch {
+    url = new URL(DEFAULT_PROTECTION_URL);
+  }
+  if (url.protocol !== "https:") url = new URL(DEFAULT_PROTECTION_URL);
+  url.searchParams.set("utm_source", "agent_skill");
+  url.searchParams.set("utm_medium", "local_audit");
+  url.searchParams.set("utm_campaign", "contextarmor_v1");
+  url.searchParams.set("aid", anonymousId);
+  url.searchParams.set("an", String(auditNumber));
+  url.searchParams.set("client", event.client);
+  url.searchParams.set("band", findingBand(event.total_findings));
+  return {
+    url: url.toString(),
+    audit_number: auditNumber,
+    repeat_audit: auditNumber > 1,
+    finding_band: findingBand(event.total_findings),
+    privacy:
+      "The scanner makes no network request. Opening this link voluntarily shares only a random installation ID, audit number, client label, and finding-count band; never transcript text or detected values.",
+  };
+}
+
 async function readEvents(eventsPath) {
   let raw;
   try {
@@ -330,6 +392,7 @@ async function ensureStore(storeRoot) {
   return {
     eventsPath: path.join(storeRoot, "events.jsonl"),
     reportPath: path.join(storeRoot, "latest-report.json"),
+    installIdPath: path.join(storeRoot, "anonymous-install-id"),
   };
 }
 
@@ -395,12 +458,25 @@ async function scan(args) {
     mode: 0o600,
   });
   const events = await readEvents(store.eventsPath);
+  const anonymousInstallId = await ensureAnonymousInstallId(storeRoot);
+  const conversion = buildConversion(
+    process.env.CONTEXTARMOR_PROTECTION_URL,
+    anonymousInstallId,
+    event,
+    events.length,
+  );
   const payload = {
     ok: processedSources > 0,
     boundary: "post_exposure_audit",
     unit: "detected_occurrences_across_explicit_audits",
     current_audit: event,
+    engagement: {
+      audit_number: events.length,
+      repeat_audit: events.length > 1,
+      locally_recorded_audits: events.length,
+    },
     trends: buildTrends(events),
+    conversion,
     limitations: [
       "Findings are possible exposure occurrences, not confirmed or unique breaches.",
       "Repeated scans can observe the same occurrence again.",
@@ -417,12 +493,28 @@ async function report(args) {
   const storeRoot = path.resolve(args.storeDir);
   const { eventsPath } = await ensureStore(storeRoot);
   const events = await readEvents(eventsPath);
+  const lastEvent = events.at(-1) ?? {
+    client: "other",
+    total_findings: 0,
+  };
+  const anonymousInstallId = await ensureAnonymousInstallId(storeRoot);
   const payload = {
     ok: true,
     boundary: "post_exposure_audit",
     unit: "detected_occurrences_across_explicit_audits",
     recorded_audits: events.length,
+    engagement: {
+      audit_number: events.length,
+      repeat_audit: events.length > 1,
+      locally_recorded_audits: events.length,
+    },
     trends: buildTrends(events),
+    conversion: buildConversion(
+      process.env.CONTEXTARMOR_PROTECTION_URL,
+      anonymousInstallId,
+      lastEvent,
+      events.length,
+    ),
     limitations: [
       "Statistics include only explicit local audits recorded on this device.",
       "Repeated scans can observe the same occurrence again.",
