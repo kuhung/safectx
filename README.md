@@ -1,107 +1,138 @@
-# SafeContext
+# ContextArmor
 
-![SafeContext checks sensitive work locally before it reaches AI](assets/social-card.png)
+![ContextArmor checks sensitive work locally](assets/social-card.png)
 
-[![Install with Agent Skills](https://skills.sh/b/kuhung/safectx)](https://www.skills.sh/kuhung/safectx/make-ai-safe-copy)
+**See what reached AI. Protect the next message locally.**
 
-**Keep the useful context. Remove what should stay private.**
+ContextArmor is a local-first privacy toolkit for people who use AI with real
+client work. It separates two jobs that are often confused:
 
-SafeContext is testing one moment: you have useful work text for ChatGPT,
-Claude, Copilot, or Codex, but part of it should not leave your device.
+1. **Free exposure audit:** inspect explicitly selected AI conversation records
+   after the fact and show current, daily, and weekly risk trends.
+2. **Local protection:** create sanitized copies before supported work is read
+   by an AI.
 
-The browser demo runs locally, shows every replacement, and never uploads the
-text. Choose the task closest to your real work:
+Raw transcripts, files, detected values, custom terms, and private mappings stay
+on the device. The baseline is risk reduction, not guaranteed anonymization,
+compliance, or proof of a breach.
 
-- [Client report](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=launch-v3-scene-evidence&utm_content=readme-client-report&variant=scene_outcome&scene=client_report)
-- [Support ticket](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=launch-v3-scene-evidence&utm_content=readme-support-ticket&variant=scene_outcome&scene=support_ticket)
-- [Error log](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=launch-v3-scene-evidence&utm_content=readme-error-log&variant=scene_outcome&scene=error_log)
+## Free AI exposure audit
 
-This is a market test, not a claim that redaction makes confidential work safe
-or compliant. We are measuring edited-input completion, cleaned-copy reuse, the
-current workaround, and real next commitments—not page traffic alone.
+The `audit-ai-exposure` Skill works across the packaged Codex, Claude Code, and
+Gemini CLI integrations. It scans only transcript paths or exports the user
+explicitly selects. It never claims background access to every AI client.
 
-## What stays local
+```bash
+node skills/audit-ai-exposure/scripts/audit.mjs scan \
+  --client codex \
+  --term "Example Client" \
+  ./synthetic-transcripts
+```
 
-- Source text and files
-- Detected values
-- Custom company and project terms
-- The private placeholder mapping
+Show the locally recorded trend without rescanning content:
 
-The browser scanner and packaged agent workflow make no network requests for
-detection. Originals are never silently modified.
+```bash
+node skills/audit-ai-exposure/scripts/audit.mjs report
+```
 
-## Agent package
+The local event store contains only timestamps, client labels, counts,
+categories, severities, and skip reasons. Repeated scans may observe the same
+occurrence again, so the report does not call findings unique leaks.
 
-The repository also contains the 0.3.0 local agent workflow for synthetic or
-already-public files. It creates a separate `.ai-safe/` copy with stable
-placeholders.
+Each report also contains a protection link with a random 128-bit installation
+ID, local audit number, client label, and finding-count band. The scanner does
+not open the link or make a network request. If the user chooses to open it,
+those aggregate fields can connect first audit, repeat audit, checkout, and paid
+conversion without sending transcript text, detected values, filenames, or
+custom terms.
 
-Supported package formats:
+## Local safe copy
 
-- `.codex-plugin/plugin.json` for Codex
-- `.claude-plugin/plugin.json` for Claude Code
-- `gemini-extension.json` for Gemini CLI
-- `skills/make-ai-safe-copy/SKILL.md` as the shared workflow
-
-Try the CLI only with synthetic or already-public content:
+The `make-ai-safe-copy` Skill creates a separate `.ai-safe/` copy with stable
+placeholders before an agent reads supported files.
 
 ```bash
 node skills/make-ai-safe-copy/scripts/safectx.mjs sanitize \
   --out-dir .ai-safe \
-  --term "Example Project" \
+  --term "Example Client" \
   ./example
 ```
+
+Originals remain untouched. The aggregate report excludes detected values; a
+mode-0600 private mapping remains local for optional restoration.
+
+## Install
 
 Agent Skills CLI:
 
 ```bash
-npx skills add https://github.com/kuhung/safectx --skill make-ai-safe-copy
+npx skills add https://github.com/kuhung/contextarmor --skill audit-ai-exposure
+npx skills add https://github.com/kuhung/contextarmor --skill make-ai-safe-copy
 ```
 
 Codex CLI:
 
 ```bash
-codex plugin marketplace add kuhung/safectx --ref main
-codex plugin add safectx@safectx
+codex plugin marketplace add kuhung/contextarmor --ref main
+codex plugin add contextarmor@contextarmor
 ```
 
 Claude Code:
 
 ```bash
-claude plugin marketplace add kuhung/safectx
-claude plugin install safectx@safectx
+claude plugin marketplace add kuhung/contextarmor
+claude plugin install contextarmor@contextarmor
 ```
 
 Gemini CLI:
 
 ```bash
-gemini extensions install kuhung/safectx --ref v0.3.0
+gemini extensions install kuhung/contextarmor --ref v0.4.0
 ```
 
-## Capability boundary
+## What stays local
 
-SafeContext reduces accidental exposure. It does not detect every confidential
-fact, make a document safe, provide a compliance guarantee, or replace an
-approved enterprise AI, DLP, or human review.
+- Selected transcripts and source files
+- Detected values and custom client/project terms
+- Aggregate day/week event history
+- Random local installation ID used only after a user voluntarily opens the protection link
+- Private placeholder mappings
 
-## Help test the actual workflow
+The bundled scanners make no network requests. They do not silently modify
+original files or claim access to AI history the host does not expose.
 
-Please describe the last real task and your current workaround, but never paste
-real secrets, customer data, internal names, document excerpts, screenshots, or
-private logs.
+## Supported baseline
 
-- [Compare the three scenes and share your workaround](https://github.com/kuhung/safectx/issues/1)
-- [Report a missed sensitive category](https://github.com/kuhung/safectx/issues/new?template=missed-detection.yml)
-- [Report an incorrect replacement](https://github.com/kuhung/safectx/issues/new?template=false-positive.yml)
-- [Share workflow feedback](https://github.com/kuhung/safectx/issues/new?template=workflow-feedback.yml)
+The exposure audit accepts UTF-8 `.txt`, `.md`, `.log`, `.json`, `.jsonl`,
+`.ndjson`, `.csv`, `.yaml`, `.yml`, and `.xml` files up to 25 MB. The safe-copy
+workflow supports common text, source, configuration, and data formats listed
+in its Skill instructions.
+
+Office documents, PDF, images, archives, metadata, comments, attachments, and
+OCR layers are intentionally outside the current baseline. Contextual secrets
+not provided as custom terms may remain.
+
+## Product and research
+
+- [Try the local browser checkpoint](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=github&utm_medium=repository&utm_campaign=contextarmor-v1&utm_content=readme)
+- [Report a missed category](https://github.com/kuhung/contextarmor/issues/new?template=missed-detection.yml)
+- [Report an incorrect detection](https://github.com/kuhung/contextarmor/issues/new?template=false-positive.yml)
+- [Share workflow feedback](https://github.com/kuhung/contextarmor/issues/new?template=workflow-feedback.yml)
+
+Never paste real secrets, customer data, private transcripts, detected values,
+or internal screenshots into a public issue.
 
 ## Development
 
 Requires Node.js 22 or newer.
+
+Release builds set `CONTEXTARMOR_PROTECTION_URL` to the deployed `/r/audit`
+endpoint. Development and tests can override it without changing the local
+scan or storage boundary.
 
 ```bash
 npm test
 ```
 
 Security and privacy reports: use the
-[SafeContext contact form](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/contact).
+[private contact form](https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/contact).

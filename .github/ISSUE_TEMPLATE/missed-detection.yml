@@ -1,5 +1,5 @@
 name: Missed sensitive category
-description: Tell us what SafeContext failed to catch without sharing the sensitive value.
+description: Tell us what ContextArmor failed to catch without sharing the sensitive value.
 title: "[Missed detection] "
 labels:
   - "feedback: missed detection"
@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thank you for helping improve SafeContext.
+        Thank you for helping improve ContextArmor.
 
         **Do not paste real secrets, customer data, internal names, document excerpts, screenshots, or private logs.** Describe the category and use a synthetic example only.
   - type: dropdown
@@ -69,7 +69,7 @@ body:
       options:
         - I noticed and fixed it manually
         - I stopped using the result
-        - I stopped using SafeContext
+        - I stopped using ContextArmor
         - I shared the result before noticing
         - I was testing only; no real workflow was affected
     validations:

@@ -1,15 +1,15 @@
 {
-  "name": "safectx",
+  "name": "contextarmor",
   "interface": {
-    "displayName": "SafeContext"
+    "displayName": "ContextArmor"
   },
   "plugins": [
     {
-      "name": "safectx",
+      "name": "contextarmor",
       "source": {
         "source": "url",
-        "url": "https://github.com/kuhung/safectx",
-        "ref": "v0.3.0"
+        "url": "https://github.com/kuhung/contextarmor",
+        "ref": "v0.4.0"
       },
       "policy": {
         "installation": "AVAILABLE",

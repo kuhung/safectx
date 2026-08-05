@@ -133,7 +133,7 @@ function parseArgs(argv) {
 }
 
 function help() {
-  console.log(`SafeContext local file sanitizer
+  console.log(`ContextArmor local file sanitizer
 
 Usage:
   node safectx.mjs sanitize [--out-dir .ai-safe] [--term "Company"] <path> [<path> ...]
@@ -450,7 +450,7 @@ async function restoreFile(args) {
     throw new Error("Restore input must be a regular UTF-8 file under 5 MB.");
   }
   if (mappingInfo.isSymbolicLink() || !mappingInfo.isFile()) {
-    throw new Error("Mapping must be a regular SafeContext mapping file.");
+    throw new Error("Mapping must be a regular ContextArmor mapping file.");
   }
 
   const mappingDocument = JSON.parse(await readFile(mappingPath, "utf8"));
@@ -460,7 +460,7 @@ async function restoreFile(args) {
     typeof mappingDocument.tokens !== "object" ||
     Array.isArray(mappingDocument.tokens)
   ) {
-    throw new Error("Unsupported or invalid SafeContext mapping.");
+    throw new Error("Unsupported or invalid ContextArmor mapping.");
   }
 
   const aiResponse = await readFile(inputPath, "utf8");

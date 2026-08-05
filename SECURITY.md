@@ -1,6 +1,6 @@
 # Security
 
-SafeContext is an early local-first preview. Do not submit real confidential
+ContextArmor is an early local-first preview. Do not submit real confidential
 documents, credentials, detected values, private mappings, or restored output
 in public issues.
 

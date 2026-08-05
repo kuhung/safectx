@@ -1,12 +1,12 @@
 {
-  "name": "safectx",
-  "version": "0.3.0",
-  "description": "Create a sanitized local copy before an AI reads sensitive work files.",
+  "name": "contextarmor",
+  "version": "0.4.0",
+  "description": "Audit AI exposure locally, track private risk trends, and create sanitized copies.",
   "author": {
-    "name": "SafeContext"
+    "name": "ContextArmor"
   },
   "homepage": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/?utm_source=codex&utm_medium=marketplace&utm_campaign=agent-preview-v1&utm_content=plugin-detail&variant=manual_cleanup",
-  "repository": "https://github.com/kuhung/safectx",
+  "repository": "https://github.com/kuhung/contextarmor",
   "license": "MIT",
   "keywords": [
     "privacy",
@@ -17,20 +17,21 @@
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "SafeContext",
-    "shortDescription": "Make a local AI-safe copy before sharing.",
-    "longDescription": "SafeContext creates deterministic sanitized copies under .ai-safe before an agent reads supported work files. Originals stay untouched, reports show only categories and counts, and private values remain on the device.",
-    "developerName": "SafeContext",
+    "displayName": "ContextArmor",
+    "shortDescription": "Audit AI exposure and protect work locally.",
+    "longDescription": "ContextArmor audits explicitly selected AI conversation records without printing detected values, stores private day and week trends locally, and creates deterministic sanitized copies before supported files are read by an agent.",
+    "developerName": "ContextArmor",
     "category": "Productivity",
     "capabilities": [
       "Local file processing",
-      "Privacy risk report",
+      "Private day and week risk trends",
+      "Post-exposure AI conversation audit",
       "Stable placeholder replacement"
     ],
     "defaultPrompt": [
+      "Audit these AI conversation records locally and show today's and this week's exposure trends.",
       "Make an AI-safe copy of these files before reading them.",
-      "Scan this workspace for secrets and create sanitized copies.",
-      "Replace this client name locally, then read only the safe copy."
+      "Scan this workspace for secrets and create sanitized copies."
     ],
     "brandColor": "#184F38",
     "websiteURL": "https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/",

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Audit AI Exposure"
+  short_description: "Audit AI chats locally and track private risk trends."
+  default_prompt: "Use $audit-ai-exposure to audit these AI conversation records locally and show today's and this week's exposure trends."

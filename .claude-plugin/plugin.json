@@ -1,11 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
-  "name": "safectx",
-  "displayName": "SafeContext",
-  "version": "0.3.0",
-  "description": "Create a sanitized local copy before an AI reads sensitive work files.",
+  "name": "contextarmor",
+  "displayName": "ContextArmor",
+  "version": "0.4.0",
+  "description": "Audit AI exposure locally, track private risk trends, and create sanitized copies.",
   "author": {
-    "name": "SafeContext"
+    "name": "ContextArmor"
   },
   "keywords": [
     "privacy",

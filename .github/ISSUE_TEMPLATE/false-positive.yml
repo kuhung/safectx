@@ -1,5 +1,5 @@
 name: Incorrect replacement
-description: Report a harmless value that SafeContext replaced, using synthetic data only.
+description: Report a harmless value that ContextArmor replaced, using synthetic data only.
 title: "[Incorrect replacement] "
 labels:
   - "feedback: incorrect replacement"
@@ -24,7 +24,7 @@ body:
   - type: dropdown
     id: detected_as
     attributes:
-      label: What did SafeContext think it found?
+      label: What did ContextArmor think it found?
       options:
         - Email address or phone number
         - API key, token, or credential
@@ -55,7 +55,7 @@ body:
         - I edited the safe copy manually
         - I reran the scan with different rules
         - I stopped using the result
-        - I stopped using SafeContext
+        - I stopped using ContextArmor
     validations:
       required: true
   - type: checkboxes
