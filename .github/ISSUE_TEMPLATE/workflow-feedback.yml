@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        This form tests whether SafeContext solves a repeated work problem.
+        This form tests whether ContextArmor solves a repeated work problem.
 
         Describe the workflow and categories only. **Do not include names, text excerpts, customer data, secrets, screenshots, or files.**
   - type: dropdown
@@ -68,7 +68,7 @@ body:
   - type: dropdown
     id: outcome
     attributes:
-      label: After trying SafeContext, what is your next action?
+      label: After trying ContextArmor, what is your next action?
       options:
         - Use it again on another approved task
         - Keep it installed but wait for another task

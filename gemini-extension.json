@@ -1,5 +1,5 @@
 {
-  "name": "safectx",
-  "version": "0.3.0",
-  "description": "Create a sanitized local copy before an AI reads sensitive work files."
+  "name": "contextarmor",
+  "version": "0.4.0",
+  "description": "Audit AI exposure locally, track private risk trends, and create sanitized copies."
 }

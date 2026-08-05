@@ -2,4 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: Private team or security question
     url: https://safectx-ai-privacy.dainty-nova-4389.chatgpt.site/contact
-    about: Contact SafeContext privately. Do not include secrets or confidential document content.
+    about: Contact ContextArmor privately. Do not include secrets or confidential document content.

@@ -57,3 +57,31 @@ test("creates a separate safe copy without exposing values in the report", async
   assert.match(safeCopy, /<CUSTOM_1>/);
   assert.equal((await stat(mapping)).mode & 0o777, 0o600);
 });
+
+test("keeps plugin metadata and distribution URLs aligned for 0.4.0", async () => {
+  const files = [
+    "package.json",
+    ".codex-plugin/plugin.json",
+    ".claude-plugin/plugin.json",
+    ".claude-plugin/marketplace.json",
+    ".agents/plugins/marketplace.json",
+    "gemini-extension.json",
+  ];
+  const documents = await Promise.all(
+    files.map(async (file) => JSON.parse(await readFile(file, "utf8"))),
+  );
+
+  assert.equal(documents[0].name, "contextarmor");
+  assert.equal(documents[0].version, "0.4.0");
+  assert.equal(documents[1].version, "0.4.0");
+  assert.equal(documents[2].version, "0.4.0");
+  assert.equal(documents[3].plugins[0].version, "0.4.0");
+  assert.equal(documents[5].version, "0.4.0");
+
+  for (const document of documents) {
+    const serialized = JSON.stringify(document);
+    assert.doesNotMatch(serialized, /kuhung\/safectx/);
+  }
+  assert.equal(documents[1].skills, "./skills/");
+  assert.equal(documents[2].skills, "./skills/");
+});
